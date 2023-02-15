@@ -1,0 +1,58 @@
+name: Use MatCUTEst in GitHub Actions
+
+on:
+  # Trigger the workflow on push or pull request
+  push:
+  #pull_request:  # DANGEROUS! MUST be disabled for self-hosted runners!
+  # Trigger the workflow by cron. The default time zone of GitHub Actions is UTC.
+  schedule:
+    - cron: '0 18 * * *'
+  # Trigger the workflow manually
+  workflow_dispatch:
+
+jobs:
+
+  test:
+
+    name: Demo
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone MatCUTEst
+        uses: actions/checkout@v3
+        with:
+          repository: equipez/matcutest_compiled
+          path: matcutest
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v1.2.4
+
+      - name: Run tests
+        uses: matlab-actions/run-command@v1.1.2
+        with:
+          command: |
+            root_dir = pwd();
+
+            % Install MatCUTEst
+            cd(fullfile(root_dir, 'matcutest')); install(); cd(root_dir);
+
+            % Check the installation
+            help matcutest, which('macup'), which('decup'), which('secup')
+
+            % Conduct your tests
+            fprintf('\nTry ZY2:\n');
+            p = macup('ZY2')  % Make the ZY2 problem
+            p.objective(p.x0)
+            p.nonlcon(p.x0)
+            decup(p);  % destroy the problem
+
+            % MatCUTEst is thread safe. It can be used within a parfor.
+            problist = {'AKIVA', 'BOX2', 'ZECEVIC2', 'ZY2'};
+            parfor ip = 1 : length(problist)
+                pname = problist{ip};
+                fprintf('\n%d. Try %s:\n', ip, pname);
+                p = macup(pname);
+                p.objective(p.x0)
+                decup(p);
+            end
