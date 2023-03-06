@@ -26,12 +26,12 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
         with:
           submodules: recursive
 
       - name: Clone PRIMA
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
         with:
           repository: libprima/prima
           path: prima
@@ -103,7 +103,7 @@ jobs:
             copyfile('./testdata/*problems.txt', fullfile(root_dir, 'matcutest.compiled'));
 
       - name: Store artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.2
         with:
           path: |
             matcutest.compiled
