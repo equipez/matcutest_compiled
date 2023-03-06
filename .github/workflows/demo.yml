@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Clone MatCUTEst
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
         with:
           repository: equipez/matcutest_compiled
           path: matcutest
